@@ -8,11 +8,11 @@ final _root = 'https://hacker-news.firebaseio.com/v0';
 class NewsApiProvider {
   Client httpClient = new Client();
 
-  fetchTopIds() async {
+  Future<List<int>> fetchTopIds() async {
     final response = await httpClient.get('$_root/v0/topstories.json');
     final ids = json.decode(response.body);
 
-    return ids;
+    return ids.cast<int>();
   }
 
   Future<ItemModel> fetchItem(int id) async {
