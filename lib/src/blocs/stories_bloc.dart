@@ -4,29 +4,35 @@ import '../models/item_model.dart';
 import '../resources/repository.dart';
 
 class StoriesBloc {
-  final repository = Repository();
+  final _repository = Repository();
   final _topIds = PublishSubject<List<int>>();
-  final _items = BehaviorSubject<int>();
-
-  Observable<Map<int, Future<ItemModel>>> items;
+  final _itemsOutput = BehaviorSubject<Map<int, Future<ItemModel>>>();
+  final _itemsFetcher = PublishSubject<int>();
 
   //Getters to stream
   Observable<List<int>> get topIds => _topIds.stream;
-  Function(int) get fetchItem => _items.sink.add;
+  Observable<Map<int, Future<ItemModel>>> get items => _itemsOutput.stream;
+  //Getters to Sink
+  Function(int) get fetchItem => _itemsFetcher.sink.add;
 
   StoriesBloc() {
-    items = _items.stream.transform(itemsTransformer());
+    _itemsFetcher.stream.transform(_itemsTransformer()).pipe(_itemsOutput);
   }
 
   fetchTopIds() async {
-    final ids = await repository.fetchTopIds();
+    final ids = await _repository.fetchTopIds();
     _topIds.sink.add(ids);
   }
 
-  itemsTransformer() {
+  clearCache() async {
+    await _repository.clearCache();
+  }
+
+  _itemsTransformer() {
     return ScanStreamTransformer(
-      (Map<int, Future<ItemModel>> cache, int id, _) {
-        cache[id] = repository.fetchItem(id);
+      (Map<int, Future<ItemModel>> cache, int id, index) {
+        print(index);
+        cache[id] = _repository.fetchItem(id);
         return cache;
       },
       <int, Future<ItemModel>>{},
@@ -36,6 +42,7 @@ class StoriesBloc {
 
   dispose() {
     _topIds.close();
-    _items.close();
+    _itemsFetcher.close();
+    _itemsOutput.close();
   }
 }
