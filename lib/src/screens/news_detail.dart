@@ -17,7 +17,7 @@ class NewsDetail extends StatelessWidget {
       appBar: AppBar(
         title: Text('Title')
       ),
-      body: _buildBody(bloc),
+      body: _buildBody(bloc),//Center(child: _buildHero())
     );
   }
 
@@ -55,9 +55,16 @@ class NewsDetail extends StatelessWidget {
         style: TextStyle(
           fontSize: 20.0,
           fontWeight: FontWeight.bold
-        ),
+        )
       )
     );
+  }
+
+  Widget _buildHero() {
+    return Hero(
+      tag: 'hero-tag-$itemId',
+      child: Icon(Icons.code, size: 100.0,)
+    );  
   }
 
   Widget _buildList(ItemModel item, Map<int, Future<ItemModel>> itemMap)  {

@@ -39,7 +39,7 @@ class NewsListTiles extends StatelessWidget {
         ListTile(
           title: Text(item.title),
           subtitle: Text('${item.score} votes'),
-          leading: Icon(Icons.code),
+          leading: _buildHero(),
           trailing: Column(
             children: <Widget>[
               Icon(Icons.comment),
@@ -52,6 +52,13 @@ class NewsListTiles extends StatelessWidget {
         ),
         Divider( height: 6.0)
       ],
+    );
+  }
+
+  Widget _buildHero() {
+    return Hero(
+      tag: 'hero-tag-$itemId',
+      child: Icon(Icons.code),
     );
   }
 }
